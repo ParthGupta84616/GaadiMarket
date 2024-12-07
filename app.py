@@ -6,6 +6,7 @@ from bson.objectid import ObjectId
 from datetime import datetime
 import os
 import json
+
 current_directory = os.getcwd()
 front_end_folder = os.path.abspath(os.path.join(current_directory, "frontend", "build"))
 
@@ -399,6 +400,7 @@ def get_models():
         return jsonify(models), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
     
     
 @app.route('/api/locations', methods=['GET'])
