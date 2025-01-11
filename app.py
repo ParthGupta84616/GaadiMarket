@@ -21,6 +21,8 @@ db = client['PartsOnline']  # Replace with your database name
 collection = db['products']  # Replace with your collection name
 inquiries_collection = db['inquiries']
 locations_collection = db["locations"]
+sold_product_collection = db["sold_products"]
+
 
 def check_file_permissions(file_path):
     if os.access(file_path, os.R_OK):
@@ -79,17 +81,16 @@ def get_vehicles():
     brand = request.args.get('brand')
     model = request.args.get('model')
     state = request.args.get('state')
+    condition = request.args.get('condition')
     
     # Build query based on provided filters
     query = {}
-    print(category)
     
     # Filter by category if provided
     if category:
         if category.lower() == "truck":
+            # Special handling for "Truck" (currently not applying any filter)
             pass
-        elif category.lower() == "medium trucks":
-            query["category"] = { "$regex": "^Truck$", "$options": "i" }
         else:
             query["category"] = { "$regex": f"^{category}$", "$options": "i" }  # Case-insensitive regex match
     
@@ -104,7 +105,13 @@ def get_vehicles():
     if state:
         query["location"] = {"$regex": f"^{state}$", "$options": "i"}
         
-    print("Query:", query)
+    if condition:
+        if condition == "new": pass
+        else: condition == "old"
+        query["vehicle_condition"] = { "$regex": f"^{condition}$", "$options": "i" }
+        
+        
+    query["to_show"] = True  # Only show vehicles that are marked to show
     
     vehicles = list(collection.find(query))
     
@@ -119,7 +126,7 @@ def get_vehicles():
             vehicle.pop("created_at", None)
             vehicle.pop("user_info", None)
             vehicle.pop("thubmnail",None)
-            vehicle.pop("cost",None)
+            # vehicle.pop("cost",None)
             vehicle.pop("images",None)
             vehicle.pop("validities",None)
             vehicle.pop("rcUpload",None)
@@ -210,6 +217,16 @@ def add_vehicle():
             ],
             # "rcAvailable": data.get("rcAvailable", False),  # Optional
             # "aadhaarAvailable": data.get("aadhaarAvailable", False),  # Optional
+            "owners_number": data.get("owners_number", 1),  # Optional
+            "vehicle_condition": data.get("vehicle_condition", "Old"),  # Optional
+            "body_type": data.get("body_type", "NA"),  # Optional
+            "engine_tech_type": data.get("engine_tech_type", "NA"),  # Optional
+            "busType": data.get("busType", None),  # Optional
+            "seat_count": data.get("seat_count", None),  # Optional
+            "to_show": False,
+            "sold":False,
+            
+            
             "created_at": datetime.utcnow(),
         }
 
@@ -299,7 +316,7 @@ def get_inquiries():
 
 
 @app.route('/api/inquiries/<inquiry_id>', methods=['DELETE'])
-def delete_inquiry(inquiry_id):
+def delete_inquiry(inquiry_id , verified=False):
     
     try:
         # Step 1: Update the inquiry to set show to False (hiding the inquiry)
@@ -308,7 +325,7 @@ def delete_inquiry(inquiry_id):
             {"$set": {"show": False}}
         )
 
-        if result.modified_count > 0:
+        if result.modified_count > 0 or verified:
             # Step 2: Fetch the inquiry document to get the associated vehicle_id
             inquiry = inquiries_collection.find_one({"_id": ObjectId(inquiry_id)})
             vehicle_id = inquiry.get('vehicle_id')
@@ -368,11 +385,10 @@ def update_inquiry_status(inquiry_id):
 @app.route('/api/brands', methods=['GET'])
 def get_brands():
     category = request.args.get('category')  # Get the category from the query params
-    print(category)
     if not category:
         return jsonify({"error": "Category is required"}), 400
     if category == "Truck":
-        brands = collection.distinct("brand")
+        brands = collection.distinct("brand", {"category": "Medium Trucks"})
         return jsonify(brands), 200
     
     try:
@@ -400,7 +416,6 @@ def get_models():
         return jsonify(models), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
     
     
 @app.route('/api/locations', methods=['GET'])
@@ -441,13 +456,146 @@ def login():
     
     
     
-# with open('location.json', 'r') as file:
-#     data = json.load(file)
+@app.route('/api/vehicles/<id>', methods=['PATCH'])
+def show_vehicle(id):
+    try:
+        result = collection.update_one(
+            {"_id": ObjectId(id)},
+            {"$set": {"to_show": True}}
+        )
 
-# # Convert $oid to ObjectId
-# for item in data:
-#     if '_id' in item and '$oid' in item['_id']:
-#         item['_id'] = ObjectId(item['_id']['$oid'])
+        if result.modified_count == 0:
+            return jsonify({"error": "Vehicle not found or already set to show"}), 404
 
-# # Insert the data into the collection
-# locations_collection.insert_many(data)
+        return jsonify({"message": "Vehicle set to show successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@app.route('/api/vehicles/hidden', methods=['GET'])
+def get_hidden_vehicles():
+    try:
+        hidden_vehicles_cursor = collection.find({"to_show": False})
+        hidden_vehicles = list(hidden_vehicles_cursor)  # Convert cursor to list of dictionaries
+
+        if hidden_vehicles:
+            # Convert ObjectId to string
+            for vehicle in hidden_vehicles:
+                vehicle["_id"] = str(vehicle["_id"])
+
+            return jsonify(hidden_vehicles), 200
+        else:
+            return jsonify({"error": "No hidden vehicles found"}), 404
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    
+
+@app.route('/api/mark_sold/<inquiry_id>', methods=['PATCH'])
+def mark_as_sold(inquiry_id):
+    try:
+        # Step 1: Fetch the inquiry document to get the associated vehicle_id
+        inquiry = inquiries_collection.find_one({"_id": ObjectId(inquiry_id)})
+
+        if not inquiry:
+            return jsonify({"error": "Inquiry not found."}), 404
+
+        vehicle_id = inquiry.get('vehicle_id')
+
+        if not vehicle_id:
+            return jsonify({"error": "No associated vehicle_id found for this inquiry."}), 404
+
+        # Step 2: Fetch the product details to check category
+        product = collection.find_one({"_id": ObjectId(vehicle_id)})
+        
+        
+
+        if not product:
+            return jsonify({"error": "Product not found."}), 404
+        
+        
+        collection.update_one(
+            {"_id": ObjectId(vehicle_id)},
+            {"$set": {"sold": True}}
+        )
+        category = product.get("category")
+        if not category:
+            return jsonify({"error": "Category not found for the product."}), 400
+
+        # Step 3: Check if this product is already marked as sold (if it exists in the sold_product collection)
+        existing_sold_product = sold_product_collection.find_one({"vehicle_id": vehicle_id})
+        
+        if existing_sold_product:
+            return jsonify({"error": "Product is already marked as sold."}), 400
+
+        # Step 4: Get the current timestamp when the product was sold
+        sold_timestamp = datetime.utcnow()
+
+        # Step 5: Insert the product into the sold_product collection
+        sold_product_collection.insert_one({
+            'vehicle_id': vehicle_id,
+            "inquiry_id":inquiry_id,
+            'category': category,
+            'sold_at': sold_timestamp
+        })
+
+        # Step 6: Now, check if there are more than 4 sold products in the same category
+        sold_products_in_category = sold_product_collection.find({"category": category}).sort('sold_at', 1)  # Sort by sold_at in ascending order
+
+        # Get all products in the same category sorted by timestamp
+        sold_products_list = list(sold_products_in_category)
+
+        if len(sold_products_list) > 4:
+            # Step 7: Get the oldest sold product (the first in the sorted list)
+            oldest_sold_product = sold_products_list[0]
+
+            # Call the delete API for the oldest product from both collections
+            vehicle_id_to_delete = oldest_sold_product['inquiry_id']
+            delete_result = delete_inquiry(vehicle_id_to_delete , verified=True)
+
+            if delete_result:
+                # Remove the oldest product from the sold_product collection as well
+                sold_product_collection.delete_one({"vehicle_id": vehicle_id_to_delete})
+                return jsonify({"message": f"Product {vehicle_id} marked as sold, oldest product deleted."}), 200
+            else:
+                return jsonify({"error": "Failed to delete the oldest product."}), 500
+        
+        inquiries_collection.update_one(
+            {"_id": ObjectId(inquiry_id)},
+            {"$set": {"show": False}}
+        )
+
+        return jsonify({"message": "Product marked as sold."}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@app.route('/api/products/<product_id>', methods=['DELETE'])
+def delete_product_and_inquiries(product_id):
+    """
+    Deletes a product by its ID and removes all inquiries associated with the product.
+    """
+    try:
+        # Step 1: Find all inquiries that have the given product ID as their vehicle_id
+        associated_inquiries = inquiries_collection.find({"vehicle_id": product_id})
+        associated_inquiry_ids = [str(inquiry["_id"]) for inquiry in associated_inquiries]
+
+        # Step 2: Delete all associated inquiries
+        inquiry_delete_result = inquiries_collection.delete_many({"vehicle_id": product_id})
+
+        # Step 3: Delete the product
+        product_delete_result = collection.delete_one({"_id": ObjectId(product_id)})
+
+        # Check deletion results
+        if product_delete_result.deleted_count > 0:
+            return jsonify({
+                "message": "Product and associated inquiries deleted successfully.",
+                "deleted_inquiries_count": inquiry_delete_result.deleted_count,
+                "deleted_inquiry_ids": associated_inquiry_ids
+            }), 200
+        else:
+            return jsonify({"error": "Product not found."}), 404
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+

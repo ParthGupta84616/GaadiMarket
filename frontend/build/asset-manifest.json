@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.d83081c5.css",
-    "main.js": "/static/js/main.35f751a8.js",
+    "main.css": "/static/css/main.c3158d96.css",
+    "main.js": "/static/js/main.644f3389.js",
     "static/js/453.149738b6.chunk.js": "/static/js/453.149738b6.chunk.js",
     "static/media/img1.jpg": "/static/media/img1.69a80739263e975d9ae1.jpg",
     "static/media/img3.jpg": "/static/media/img3.c3d6ba254836de1d25da.jpg",
@@ -56,18 +56,18 @@
     "static/media/Eicher Pro 6025HT.png": "/static/media/Eicher Pro 6025HT.841139f6ff79c7604fcd.png",
     "static/media/Ashok Leyland 2518i.png": "/static/media/Ashok Leyland 2518i.239a17e12d0f60c2273d.png",
     "static/media/Isuzu D-Max V-Cross.png": "/static/media/Isuzu D-Max V-Cross.de0a4effe03b547151b5.png",
-    "static/media/Ashok.png": "/static/media/Ashok.1446a19692a89733aea4.png",
+    "static/media/Ashok Leyland.png": "/static/media/Ashok Leyland.1446a19692a89733aea4.png",
     "static/media/LightTruck.png": "/static/media/LightTruck.220a4c35c0c49c786868.png",
     "static/media/HeavyTruck.png": "/static/media/HeavyTruck.6b6651c9ee52c1927563.png",
     "static/media/MediumTruck.png": "/static/media/MediumTruck.fd4c48250214513554a8.png",
     "static/media/isuzu.png": "/static/media/isuzu.ceb0801182b6a87df65f.png",
     "index.html": "/index.html",
-    "main.d83081c5.css.map": "/static/css/main.d83081c5.css.map",
-    "main.35f751a8.js.map": "/static/js/main.35f751a8.js.map",
+    "main.c3158d96.css.map": "/static/css/main.c3158d96.css.map",
+    "main.644f3389.js.map": "/static/js/main.644f3389.js.map",
     "453.149738b6.chunk.js.map": "/static/js/453.149738b6.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.d83081c5.css",
-    "static/js/main.35f751a8.js"
+    "static/css/main.c3158d96.css",
+    "static/js/main.644f3389.js"
   ]
 }
