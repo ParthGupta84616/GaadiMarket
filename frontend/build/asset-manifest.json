@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.c3158d96.css",
-    "main.js": "/static/js/main.644f3389.js",
+    "main.js": "/static/js/main.7c91b727.js",
     "static/js/453.149738b6.chunk.js": "/static/js/453.149738b6.chunk.js",
     "static/media/img1.jpg": "/static/media/img1.69a80739263e975d9ae1.jpg",
     "static/media/img3.jpg": "/static/media/img3.c3d6ba254836de1d25da.jpg",
@@ -63,11 +63,11 @@
     "static/media/isuzu.png": "/static/media/isuzu.ceb0801182b6a87df65f.png",
     "index.html": "/index.html",
     "main.c3158d96.css.map": "/static/css/main.c3158d96.css.map",
-    "main.644f3389.js.map": "/static/js/main.644f3389.js.map",
+    "main.7c91b727.js.map": "/static/js/main.7c91b727.js.map",
     "453.149738b6.chunk.js.map": "/static/js/453.149738b6.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.c3158d96.css",
-    "static/js/main.644f3389.js"
+    "static/js/main.7c91b727.js"
   ]
 }
