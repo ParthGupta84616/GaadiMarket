@@ -6,6 +6,7 @@ from bson.objectid import ObjectId
 from datetime import datetime
 import os
 import json
+import uuid
 
 current_directory = os.getcwd()
 front_end_folder = os.path.abspath(os.path.join(current_directory, "frontend", "build"))
@@ -16,13 +17,17 @@ CORS(app, supports_credentials=True, origins='*')
 
 
 # Replace 'your_mongo_uri' with your actual MongoDB URI
-client = MongoClient('mongodb://localhost:27017')  # Connect to the MongoDB client
+# client = MongoClient('mongodb://localhost:27017')  # Connect to the MongoDB client
+client = MongoClient('mongodb+srv://parthgupta221092:P%40ssw0rd@cluster0.rb0zm.mongodb.net/')
+
 db = client['PartsOnline']  # Replace with your database name
 collection = db['products']  # Replace with your collection name
 inquiries_collection = db['inquiries']
 locations_collection = db["locations"]
 sold_product_collection = db["sold_products"]
 
+UPLOAD_FOLDER = 'uploads'  # Make sure this folder exists
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def check_file_permissions(file_path):
     if os.access(file_path, os.R_OK):
@@ -599,3 +604,29 @@ def delete_product_and_inquiries(product_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+
+
+@app.route('/api/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+    if file:
+        # Generate a unique filename
+        unique_filename = f"{uuid.uuid4()}{os.path.splitext(file.filename)[1]}" 
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+        
+        # Save the file
+        file.save(file_path)
+        
+        # Create the URL to access the uploaded file
+        file_url = f"https://gaadimarket.in/api/uploads/{unique_filename}"
+        print(file_url)
+        
+        return jsonify({'filename': file_url}), 200
+
+@app.route('/api/uploads/<filename>', methods=['GET'])
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="./logo.png" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
@@ -34,14 +34,30 @@
     />
     <meta name="twitter:image" content="./logo.png" />
 
-    <link rel="apple-touch-icon" href="./logo.png" />
-    <link rel="manifest" href="./manifest.json" />
+    <!-- JSON-LD Schema for SEO -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Gaadi Market",
+        "url": "https://gaadimarket.in",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://gaadimarket.in/search?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        },
+        "description": "Explore our extensive range of trucks, buses, and mini trucks. Buy or sell with Gaadi Market - the trusted vehicle marketplace."
+      }
+    </script>
+
     <title>Gaadi Market</title>
-    <script defer="defer" src="/static/js/main.7c91b727.js"></script>
-    <link href="/static/css/main.c3158d96.css" rel="stylesheet" />
+    <script defer="defer" src="./static/js/main.43255ebf.js"></script>
+    <link href="./static/css/main.c3158d96.css" rel="stylesheet" />
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>
+      <p>You need to enable JavaScript to run this app.</p>
+    </noscript>
     <div id="root"></div>
   </body>
 </html>
