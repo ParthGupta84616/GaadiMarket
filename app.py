@@ -17,8 +17,8 @@ CORS(app, supports_credentials=True, origins='*')
 
 
 # Replace 'your_mongo_uri' with your actual MongoDB URI
-# client = MongoClient('mongodb://localhost:27017')  # Connect to the MongoDB client
-client = MongoClient('mongodb+srv://parthgupta221092:P%40ssw0rd@cluster0.rb0zm.mongodb.net/')
+client = MongoClient('mongodb://localhost:27017')  # Connect to the MongoDB client
+# client = MongoClient('mongodb+srv://parthgupta221092:P%40ssw0rd@cluster0.rb0zm.mongodb.net/')
 
 db = client['PartsOnline']  # Replace with your database name
 collection = db['products']  # Replace with your collection name

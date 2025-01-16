@@ -2,6 +2,7 @@
   "name": "parts-online",
   "proxy": "http://localhost:5000",
   "version": "0.1.0",
+  "homepage": "https://gaadimarket.in",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
