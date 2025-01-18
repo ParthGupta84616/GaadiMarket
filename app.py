@@ -80,6 +80,7 @@ def serve_static(filename):
 
 
 
+
 @app.route('/api/vehicles', methods=['GET'])
 def get_vehicles():
     category = request.args.get('category')
@@ -108,12 +109,16 @@ def get_vehicles():
         query["model"] = { "$regex": f"^{model}$", "$options": "i" }
 
     if state:
-        query["location"] = {"$regex": f"^{state}$", "$options": "i"}
+        query["location"] = {"$elemMatch": {"$regex": f"^{state}$", "$options": "i"}}
         
     if condition:
         if condition == "new": pass
+        elif condition == "State" : condition = False
         else: condition == "old"
-        query["vehicle_condition"] = { "$regex": f"^{condition}$", "$options": "i" }
+        
+
+        if condition:
+            query["vehicle_condition"] = { "$regex": f"^{condition}$", "$options": "i" }
         
         
     query["to_show"] = True  # Only show vehicles that are marked to show
