@@ -17,8 +17,8 @@ CORS(app, supports_credentials=True, origins='*')
 
 
 # Replace 'your_mongo_uri' with your actual MongoDB URI
-# client = MongoClient('mongodb://localhost:27017')  # Connect to the MongoDB client
-client = MongoClient('mongodb+srv://parthgupta221092:P%40ssw0rd@cluster0.rb0zm.mongodb.net/')
+client = MongoClient('mongodb://localhost:27017')  # Connect to the MongoDB client
+# client = MongoClient('mongodb+srv://parthgupta221092:P%40ssw0rd@cluster0.rb0zm.mongodb.net/')
 
 db = client['PartsOnline']  # Replace with your database name
 collection = db['products']  # Replace with your collection name
@@ -79,6 +79,10 @@ def serve_static(filename):
         return abort(500)  # Return 500 for any other server errors
 
 
+def to_hex(data):
+    """Convert data to a hexadecimal string."""
+    return data.encode('utf-8').hex()
+
 
 
 @app.route('/api/vehicles', methods=['GET'])
@@ -134,6 +138,7 @@ def get_vehicles():
             vehicle.pop("features", None)
             vehicle.pop("location", None)
             vehicle.pop("created_at", None)
+            vehicle.update({"OwnerNumber" : to_hex(vehicle["user_info"]["phone"])})
             vehicle.pop("user_info", None)
             vehicle.pop("thubmnail",None)
             # vehicle.pop("cost",None)
@@ -143,18 +148,27 @@ def get_vehicles():
             vehicle.pop("aadhaarUpload",None)
             vehicle.pop("location",None)
         
-        # Return the filtered list as a JSON response
         return dumps(vehicles), 200
+    
     else:
         # Return an error if no vehicles were found
         return jsonify({"error": "No vehicles found matching the criteria"}), 404
    
+ 
 @app.route('/api/vehicles/<id>', methods=['GET'])
 def get_vehicle(id):
     vehicle = collection.find_one({"_id": ObjectId(id)})
+    vehicle.pop("user_info", None)
+    documents = {}
+    if vehicle.get("documents", {}).get("rc", {}).get("filename"):
+        documents["rc"] = True
+    
+    vehicle["documents"] = documents
+        
     if vehicle:
         return dumps(vehicle)
     return jsonify({"error": "Vehicle not found"}), 404
+
 
 
 

@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.fde514b9.css",
-    "main.js": "/static/js/main.acf2bc92.js",
+    "main.css": "/static/css/main.773704cb.css",
+    "main.js": "/static/js/main.de49701a.js",
     "static/js/453.149738b6.chunk.js": "/static/js/453.149738b6.chunk.js",
     "static/media/img1.jpg": "/static/media/img1.69a80739263e975d9ae1.jpg",
     "static/media/img3.jpg": "/static/media/img3.c3d6ba254836de1d25da.jpg",
@@ -56,12 +56,12 @@
     "static/media/MediumTruck.png": "/static/media/MediumTruck.fd4c48250214513554a8.png",
     "static/media/isuzu.png": "/static/media/isuzu.ceb0801182b6a87df65f.png",
     "index.html": "/index.html",
-    "main.fde514b9.css.map": "/static/css/main.fde514b9.css.map",
-    "main.acf2bc92.js.map": "/static/js/main.acf2bc92.js.map",
+    "main.773704cb.css.map": "/static/css/main.773704cb.css.map",
+    "main.de49701a.js.map": "/static/js/main.de49701a.js.map",
     "453.149738b6.chunk.js.map": "/static/js/453.149738b6.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.fde514b9.css",
-    "static/js/main.acf2bc92.js"
+    "static/css/main.773704cb.css",
+    "static/js/main.de49701a.js"
   ]
 }
